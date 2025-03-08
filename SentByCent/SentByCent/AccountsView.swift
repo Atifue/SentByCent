@@ -1,54 +1,43 @@
-//
-//  AccountsView.swift
-//  SentByCent
-//
-//  Created by Atif Mahmood on 3/8/25.
-//
-
 import SwiftUI
 
 struct AccountsView: View {
-    @State private var accounts: [(String, String)] = [
-        ("Chase Bank", "**** 1234"),
-        ("Bank of America", "**** 5678"),
-        ("Wells Fargo", "**** 9101")
-    ]
-    
-    @State private var showingLinkAccountView = false
-    
+    @State private var accounts: [(String, String)] = []
+    @State private var showingLinkAccountView = false  // ✅ Add back state for sheet
+
     var body: some View {
         NavigationView {
             VStack {
-                Text("Linked Accounts")
+                Text("Linked Account")
                     .font(.custom("American Typewriter", size: 28))
                     .fontWeight(.bold)
                     .padding(.top, 20)
-                
+
                 List {
-                    ForEach(accounts.indices, id: \.self) { index in
+                    if let account = GlobalVariables.account {
                         HStack {
                             VStack(alignment: .leading) {
-                                Text(accounts[index].0)
+                                Text(account.nickname) // ✅ Display account nickname
                                     .font(.custom("American Typewriter", size: 20))
                                     .foregroundColor(.black)
-                                
-                                Text(accounts[index].1)
+
+                                Text("**** \(String(account.account_number.suffix(4)))") // ✅ Show last 4 digits
                                     .font(.custom("American Typewriter", size: 16))
                                     .foregroundColor(.gray)
                             }
                             Spacer()
                         }
                         .padding(.vertical, 8)
-                    }
-                    .onDelete { indexSet in
-                        accounts.remove(atOffsets: indexSet) // Delete accounts
+                    } else {
+                        Text("No linked accounts found.")
+                            .foregroundColor(.gray)
+                            .italic()
                     }
                 }
                 .listStyle(InsetGroupedListStyle())
-                
+
                 Spacer()
-                
-                // Link an Account button
+
+                // ✅ Add back "Link an Account" button
                 Button(action: {
                     showingLinkAccountView = true
                 }) {
@@ -67,14 +56,14 @@ struct AccountsView: View {
                     .shadow(color: Color(hex: "#c9ada7").opacity(0.3), radius: 5, x: 0, y: 3)
                 }
                 .padding(.bottom, 20)
-                .sheet(isPresented: $showingLinkAccountView) {
+                .sheet(isPresented: $showingLinkAccountView) {  // ✅ Show linking view
                     LinkAccountView(accounts: $accounts)
                 }
             }
             .background(Color(UIColor.systemGroupedBackground))
         }
     }
-}
+} // ✅ Make sure AccountsView is properly closed
 
 // MARK: - Link an Account Form (Adds New Account)
 struct LinkAccountView: View {
