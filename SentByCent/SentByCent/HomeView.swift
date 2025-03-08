@@ -28,6 +28,13 @@ struct HomeView: View {
                         .font(.custom("American Typewriter", size: 14))
                 }
                 .tag("Charity")
+            ProfileView()
+                .tabItem {
+                    Image(systemName: "person.fill")
+                    Text("Profile")
+                        .font(.custom("American Typewriter", size: 14))
+                }
+                .tag("Profile")
         }
         .accentColor(.blue)
     }
