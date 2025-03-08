@@ -5,7 +5,7 @@ struct HomeView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            MainScreen()
+            MainScreen() // ✅ Updated MainScreen with dynamic transactions
                 .tabItem {
                     Image(systemName: "house.fill")
                     Text("Home")
@@ -21,39 +21,21 @@ struct HomeView: View {
                 }
                 .tag("Accounts")
 
-         CharityView()
+            CharityView()
                 .tabItem {
                     Image(systemName: "heart.fill")
                     Text("Charity")
                         .font(.custom("American Typewriter", size: 14))
                 }
                 .tag("Charity")
-/*
-            ProfileView()
-                .tabItem {
-                    Image(systemName: "person.fill")
-                    Text("Profile")
-                        .font(.custom("American Typewriter", size: 14))
-                }
-                .tag("Profile") */
         }
         .accentColor(.blue)
     }
 }
 
+// ✅ Updated MainScreen with API transactions
 struct MainScreen: View {
-    let transactions = [
-        ("Starbucks", "+$5.50"),
-        ("Amazon", "+$120.99"),
-        ("Walmart", "+$45.20"),
-        ("Target", "+$30.75"),
-        ("Uber", "+$10.00"),
-        ("Apple Store", "+$200.00"),
-        ("Nike", "+$75.50"),
-        ("Best Buy", "+$150.00"),
-        ("McDonald's", "+$7.90"),
-        ("Netflix", "+$13.99")
-    ]
+    @StateObject private var viewModel = TransactionsViewModel()
 
     var body: some View {
         NavigationStack {
@@ -64,7 +46,7 @@ struct MainScreen: View {
                             .fill(Color(red: 201/255, green: 173/255, blue: 167/255))
                             .frame(width: 250, height: 250)
                             .overlay(
-                                Text("$320.50")
+                                Text("$320.50") // Placeholder for savings
                                     .font(.custom("American Typewriter", size: 50))
                                     .fontWeight(.bold)
                                     .foregroundColor(.white)
@@ -85,15 +67,15 @@ struct MainScreen: View {
                         .padding(.top, 30)
 
                     VStack(spacing: 0) {
-                        ForEach(transactions, id: \.0) { transaction in
+                        ForEach(viewModel.transactions, id: \.0) { transaction in
                             HStack {
-                                Text(transaction.0)
+                                Text(transaction.0)  // Transaction Description
                                     .font(.custom("American Typewriter", size: 18))
                                     .fontWeight(.medium)
                                 
                                 Spacer()
                                 
-                                Text(transaction.1)
+                                Text(transaction.1)  // Transaction Amount
                                     .font(.custom("American Typewriter", size: 18))
                                     .foregroundColor(.green)
                             }
@@ -115,6 +97,13 @@ struct MainScreen: View {
             }
             .background(Color.gray.opacity(0.1).edgesIgnoringSafeArea(.all))
             .navigationBarHidden(true)
+            .onAppear {
+                if let accountID = GlobalVariables.account?.id { // ✅ Use stored account ID
+                    viewModel.fetchTransactions(for: accountID)
+                } else {
+                    print("❌ Error: No account ID found")
+                }
+            }
         }
     }
 }
