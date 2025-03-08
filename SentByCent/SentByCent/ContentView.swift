@@ -8,6 +8,7 @@ struct ContentView: View {
     @State private var isSignUp: Bool = false // To toggle between Log In and Sign Up
     @State private var loginError: String? = nil // To display error message
     @StateObject private var accountViewModel = AccountViewModel() // ✅ Use ViewModel
+    @StateObject private var transactionsViewModel = TransactionsViewModel() // Add TransactionsViewModel here
 
     var body: some View {
         NavigationStack {
@@ -115,7 +116,8 @@ struct ContentView: View {
             .padding(.top, -40)
             .background(Color(red: 201/255, green: 173/255, blue: 167/255).edgesIgnoringSafeArea(.all))
             .navigationDestination(isPresented: $isLoggedIn) {
-                HomeView()
+                // Pass transactionsViewModel to HomeView
+                HomeView(transactionsViewModel: transactionsViewModel)
             }
             .navigationBarBackButtonHidden(true)
         }

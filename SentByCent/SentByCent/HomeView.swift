@@ -2,10 +2,14 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var selectedTab: String = "Home"
-
+    
+    // Make sure to observe the view model
+    @ObservedObject var transactionsViewModel: TransactionsViewModel
+    
     var body: some View {
         TabView(selection: $selectedTab) {
-            MainScreen() // ✅ Updated MainScreen with dynamic transactions
+            // Pass transactionsViewModel to MainScreen
+            MainScreen(transactionsViewModel: transactionsViewModel)
                 .tabItem {
                     Image(systemName: "house.fill")
                     Text("Home")
@@ -40,9 +44,9 @@ struct HomeView: View {
     }
 }
 
-// ✅ Updated MainScreen with API transactions
 struct MainScreen: View {
-    @StateObject private var viewModel = TransactionsViewModel()
+    // Accept transactionsViewModel passed from HomeView
+    @ObservedObject var transactionsViewModel: TransactionsViewModel
 
     var body: some View {
         NavigationStack {
@@ -53,7 +57,7 @@ struct MainScreen: View {
                             .fill(Color(red: 201/255, green: 173/255, blue: 167/255))
                             .frame(width: 250, height: 250)
                             .overlay(
-                                Text("$320.50") // Placeholder for savings
+                                Text("$\(String(format: "%.2f", transactionsViewModel.totalSaved))") // Show totalSaved dynamically
                                     .font(.custom("American Typewriter", size: 50))
                                     .fontWeight(.bold)
                                     .foregroundColor(.white)
@@ -74,7 +78,7 @@ struct MainScreen: View {
                         .padding(.top, 30)
 
                     VStack(spacing: 0) {
-                        ForEach(viewModel.transactions, id: \.0) { transaction in
+                        ForEach(transactionsViewModel.transactions, id: \.0) { transaction in
                             HStack {
                                 Text(transaction.0)  // Transaction Description
                                     .font(.custom("American Typewriter", size: 18))
@@ -106,7 +110,7 @@ struct MainScreen: View {
             .navigationBarHidden(true)
             .onAppear {
                 if let accountID = GlobalVariables.account?.id { // ✅ Use stored account ID
-                    viewModel.fetchTransactions(for: accountID)
+                    transactionsViewModel.fetchTransactions(for: accountID)
                 } else {
                     print("❌ Error: No account ID found")
                 }
