@@ -63,7 +63,7 @@ struct ProfileView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.red)
+                        .background(Color(red: 201/255, green: 173/255, blue: 167/255))
                         .cornerRadius(10)
                         .padding(.horizontal, 40)
                 }
@@ -144,7 +144,7 @@ struct ChangeCredentialsView: View {
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.blue)
+                            .background(Color(red: 201/255, green: 173/255, blue: 167/255))
                             .cornerRadius(10)
                             .padding(.horizontal, 40)
                     }
@@ -204,7 +204,7 @@ struct ChangeCredentialsView: View {
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.blue)
+                            .background(Color(red: 201/255, green: 173/255, blue: 167/255))
                             .cornerRadius(10)
                             .padding(.horizontal, 40)
                     }
