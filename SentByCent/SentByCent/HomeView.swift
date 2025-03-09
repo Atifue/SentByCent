@@ -123,6 +123,10 @@ struct MainScreen: View {
                     print("❌ Error: No account ID found")
                 }
             }
+            .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("DonationMade"))) { _ in
+                // Usually not needed, but can nudge SwiftUI to refresh:
+                globalVars.objectWillChange.send()
+            }
         }
     }
 }
