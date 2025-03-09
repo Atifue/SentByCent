@@ -10,7 +10,7 @@ struct ProfileView: View {
             VStack(spacing: 20) {
                 
                 // Profile Image (Larger Circle)
-                Image("profile_image") // Replace with actual image asset
+                Image(systemName: "person.circle.fill") // Replace with actual image asset
                     .resizable()
                     .scaledToFill()
                     .frame(width: 150, height: 150)

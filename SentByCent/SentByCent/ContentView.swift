@@ -17,7 +17,7 @@ struct ContentView: View {
                 
                 // App Title with a bubbly, bigger font
                 Text("SentByCent")
-                    .font(.custom("Pacifico", size: 50)) // Smaller, bubbly font
+                    .font(.custom("American Typewriter", size: 50)) // Smaller, bubbly font
                     .foregroundColor(.black) // Yellow text color
                     .padding(10)
                     
