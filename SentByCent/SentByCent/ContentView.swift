@@ -78,7 +78,7 @@ struct ContentView: View {
                             } else {
                                 print("🟡 Attempting login with customer_id:", password) // 🔍 Debug print
                                 let customerID = password  // ✅ Customer ID stored in password
-
+                                GlobalVariables.username = username
                                 // Fetch accounts and store first one globally
                                 accountViewModel.fetchAccounts(for: customerID)
 

@@ -19,7 +19,7 @@ struct ProfileView: View {
                 
                 // User Info (Styled like a list)
                 VStack(alignment: .leading, spacing: 15) {
-                    InfoRow(title: "Username:", value: "user123")
+                    InfoRow(title: "Username:", value: GlobalVariables.username ?? "Unknown")
                     InfoRow(title: "Password:", value: "********")
                     InfoRow(title: "Donations Made:", value: "$150")
                     

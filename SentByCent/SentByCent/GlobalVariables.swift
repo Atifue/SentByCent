@@ -9,4 +9,5 @@ import Foundation
 
 class GlobalVariables {
     static var account: Account?
+    static var username: String?
 }
