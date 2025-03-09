@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ProfileView: View {
+    @Binding var isLoggedIn: Bool // ✅ Binding to control logout navigation
     @State private var username: String = GlobalVariables.username ?? "Unknown" // ✅ Track username updates
 
     var body: some View {
@@ -49,9 +50,9 @@ struct ProfileView: View {
                 
                 Spacer()
                 
-                // Logout Button
+                // Logout Button ✅ (Navigates Back to ContentView)
                 Button(action: {
-                    print("User Logged Out")
+                    isLoggedIn = false // ✅ Logs out user and returns to login
                 }) {
                     Text("Logout")
                         .font(.custom("AmericanTypewriter", size: 20))

@@ -116,8 +116,7 @@ struct ContentView: View {
             .padding(.top, -40)
             .background(Color(red: 201/255, green: 173/255, blue: 167/255).edgesIgnoringSafeArea(.all))
             .navigationDestination(isPresented: $isLoggedIn) {
-                // Pass transactionsViewModel to HomeView
-                HomeView(transactionsViewModel: transactionsViewModel)
+                HomeView(isLoggedIn: $isLoggedIn, transactionsViewModel: transactionsViewModel) // ✅ Pass both values
             }
             .navigationBarBackButtonHidden(true)
         }

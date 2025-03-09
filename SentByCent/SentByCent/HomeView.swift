@@ -2,7 +2,7 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var selectedTab: String = "Home"
-    
+    @Binding var isLoggedIn: Bool
     // Make sure to observe the view model
     @ObservedObject var transactionsViewModel: TransactionsViewModel
     
@@ -32,7 +32,7 @@ struct HomeView: View {
                         .font(.custom("American Typewriter", size: 14))
                 }
                 .tag("Charity")
-            ProfileView()
+            ProfileView(isLoggedIn: $isLoggedIn)
                 .tabItem {
                     Image(systemName: "person.fill")
                     Text("Profile")
