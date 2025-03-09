@@ -12,11 +12,12 @@ struct Account: Codable, Identifiable {
     let nickname: String
     let customer_id: String
     let account_number: String
+    let balance: Double
 
     // Map JSON keys to Swift properties
     enum CodingKeys: String, CodingKey {
         case id = "_id"
-        case nickname, customer_id, account_number
+        case nickname, customer_id, account_number, balance
     }
 }
 // juststoring an account object, we'll need all this info

@@ -3,6 +3,11 @@ import Foundation
 class TransactionsViewModel: ObservableObject {
     @Published var transactions: [(String, String)] = []  // Stores (description, rounded-up cents) as a list
     @Published var totalSaved: Double = 0.0  // Stores the total rounded-up cents
+    
+    // new array without rounding transactions
+    @Published var realTransactions: [(String, Double)] = []  // Stores (description, original amount) as a list
+
+    
 
     func fetchTransactions(for accountID: String) {
         guard let url = URL(string: "http://api.nessieisreal.com/accounts/\(accountID)/purchases?key=2e0c94f409f596fcf845593ff5e6d409") else {
@@ -50,4 +55,48 @@ class TransactionsViewModel: ObservableObject {
         let change = roundedAmount - amount  // Calculate the spare change
         return change
     }
+    
+    
+    
+    // WITHOUT rounding this is a method to j grab transactions raw
+    
+    func fetchTransactionsReal(for accountID: String) {
+        guard let url = URL(string: "http://api.nessieisreal.com/accounts/\(accountID)/purchases?key=2e0c94f409f596fcf845593ff5e6d409") else {
+            print("Invalid URL")
+            return
+        }
+
+        let request = URLRequest(url: url)
+        let task: URLSessionDataTask = URLSession.shared.dataTask(with: request) { [weak self] (data, response, error) in
+            guard let self = self else { return }
+
+            if let error = error {
+                print("Error fetching transactions: \(error.localizedDescription)")
+                return
+            }
+
+            guard let data = data else {
+                print("No data received")
+                return
+            }
+
+            do {
+                let decodedTransactions = try JSONDecoder().decode([Purchase].self, from: data)
+                DispatchQueue.main.async {
+                    // Populate the realTransactions array with the actual data
+                    self.realTransactions = decodedTransactions.map { purchase in
+                        return (purchase.description, purchase.amount) // No rounded-up amount
+                    }
+                }
+            } catch {
+                print("Error decoding transactions: \(error)")
+            }
+        }
+        task.resume()
+    }
+    
+    // end
+    
+    
+    
 }

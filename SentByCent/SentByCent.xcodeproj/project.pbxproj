@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		531D17562D7B81A900C4D02F /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 531D17552D7B81A400C4D02F /* HomeView.swift */; };
+		C03103442D7D1A8100E280DD /* AccountDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03103432D7D1A7300E280DD /* AccountDetailsView.swift */; };
 		C05ED3352D7C2C9100F6C59E /* AccountsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C05ED3342D7C2C8E00F6C59E /* AccountsView.swift */; };
 		C05ED3372D7C2CB700F6C59E /* CharityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C05ED3362D7C2CB400F6C59E /* CharityView.swift */; };
 		C05ED3632D7CB21F00F6C59E /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = C05ED3622D7CB21F00F6C59E /* Account.swift */; };
@@ -47,6 +48,7 @@
 
 /* Begin PBXFileReference section */
 		531D17552D7B81A400C4D02F /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		C03103432D7D1A7300E280DD /* AccountDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDetailsView.swift; sourceTree = "<group>"; };
 		C05ED3342D7C2C8E00F6C59E /* AccountsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountsView.swift; sourceTree = "<group>"; };
 		C05ED3362D7C2CB400F6C59E /* CharityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharityView.swift; sourceTree = "<group>"; };
 		C05ED3622D7CB21F00F6C59E /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
@@ -123,6 +125,7 @@
 				C09F1A802D7B6AB1004BB785 /* SentByCentApp.swift */,
 				531D17552D7B81A400C4D02F /* HomeView.swift */,
 				C05ED36F2D7CBBB200F6C59E /* ProfileView.swift */,
+				C03103432D7D1A7300E280DD /* AccountDetailsView.swift */,
 				C05ED3342D7C2C8E00F6C59E /* AccountsView.swift */,
 				C05ED3362D7C2CB400F6C59E /* CharityView.swift */,
 				C05ED3622D7CB21F00F6C59E /* Account.swift */,
@@ -303,6 +306,7 @@
 				C05ED3632D7CB21F00F6C59E /* Account.swift in Sources */,
 				C09F1A812D7B6AB1004BB785 /* SentByCentApp.swift in Sources */,
 				C05ED3692D7CB24500F6C59E /* SentByCentApp.swift in Sources */,
+				C03103442D7D1A8100E280DD /* AccountDetailsView.swift in Sources */,
 				C05ED36A2D7CB24500F6C59E /* AccountViewModel.swift in Sources */,
 				C05ED36B2D7CB24500F6C59E /* TransactionsViewModel.swift in Sources */,
 				C05ED36C2D7CB24500F6C59E /* Purchase.swift in Sources */,

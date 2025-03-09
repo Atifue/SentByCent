@@ -3,6 +3,10 @@ import SwiftUI
 struct AccountsView: View {
     @State private var accounts: [(String, String)] = []
     @State private var showingLinkAccountView = false  // ✅ Add back state for sheet
+    
+    // now transaction list is expected for accountDetails
+    @ObservedObject var transactionsViewModel: TransactionsViewModel
+    
 
     var body: some View {
         NavigationView {
@@ -14,19 +18,25 @@ struct AccountsView: View {
 
                 List {
                     if let account = GlobalVariables.account {
-                        HStack {
-                            VStack(alignment: .leading) {
-                                Text(account.nickname) // ✅ Display account nickname
-                                    .font(.custom("American Typewriter", size: 20))
-                                    .foregroundColor(.black)
+                        // ✅ Added NavigationLink to make the account clickable
+                        NavigationLink( //added transactionView
+                            destination: AccountDetailsView(account: account, transactionsViewModel: transactionsViewModel),
+                            label: {
+                                HStack {
+                                    VStack(alignment: .leading) {
+                                        Text(account.nickname) // ✅ Display account nickname
+                                            .font(.custom("American Typewriter", size: 20))
+                                            .foregroundColor(.black)
 
-                                Text("**** \(String(account.account_number.suffix(4)))") // ✅ Show last 4 digits
-                                    .font(.custom("American Typewriter", size: 16))
-                                    .foregroundColor(.gray)
+                                        Text("**** \(String(account.account_number.suffix(4)))") // ✅ Show last 4 digits
+                                            .font(.custom("American Typewriter", size: 16))
+                                            .foregroundColor(.gray)
+                                    }
+                                    Spacer()
+                                }
+                                .padding(.vertical, 8)
                             }
-                            Spacer()
-                        }
-                        .padding(.vertical, 8)
+                        )
                     } else {
                         Text("No linked accounts found.")
                             .foregroundColor(.gray)

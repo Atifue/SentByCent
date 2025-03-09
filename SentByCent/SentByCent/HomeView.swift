@@ -17,7 +17,7 @@ struct HomeView: View {
                 }
                 .tag("Home")
 
-            AccountsView()
+            AccountsView(transactionsViewModel: transactionsViewModel)
                 .tabItem {
                     Image(systemName: "person.2.fill")
                     Text("Accounts")
@@ -72,7 +72,7 @@ struct MainScreen: View {
                     }
                     .padding(.bottom, 40)
 
-                    Text("Transactions")
+                    Text("Coins")
                         .font(.custom("American Typewriter", size: 24))
                         .fontWeight(.bold)
                         .padding(.top, 30)
