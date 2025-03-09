@@ -8,7 +8,8 @@ struct ContentView: View {
     @State private var isSignUp: Bool = false // To toggle between Log In and Sign Up
     @State private var loginError: String? = nil // To display error message
     @StateObject private var accountViewModel = AccountViewModel() // ✅ Use ViewModel
-    @StateObject private var transactionsViewModel = TransactionsViewModel() // Add TransactionsViewModel here
+    @StateObject private var transactionsViewModel = TransactionsViewModel() // ✅ Track Transactions
+    @ObservedObject var globalVars = GlobalVariables.shared // ✅ Observe GlobalVariables
 
     var body: some View {
         NavigationStack {
@@ -78,16 +79,23 @@ struct ContentView: View {
                             } else {
                                 print("🟡 Attempting login with customer_id:", password) // 🔍 Debug print
                                 let customerID = password  // ✅ Customer ID stored in password
-                                GlobalVariables.username = username
-                                // Fetch accounts and store first one globally
+                                GlobalVariables.shared.username = username
+                                
+                                // Fetch accounts
                                 accountViewModel.fetchAccounts(for: customerID)
 
-                                // Wait for the API call to finish, then store the first account
+                                // Wait for accounts to load, then fetch transactions
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                                     if let firstAccount = accountViewModel.accounts.first {
-                                        GlobalVariables.account = firstAccount  // ✅ Store in Global
-                                        isLoggedIn = true
-                                        loginError = nil
+                                        GlobalVariables.shared.account = firstAccount  // ✅ Store in Global
+                                        transactionsViewModel.fetchTransactions(for: firstAccount.id)
+
+                                        // Wait for transactions to load, then update saved amount
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                            GlobalVariables.shared.savedAmount = transactionsViewModel.totalSaved
+                                            isLoggedIn = true
+                                            loginError = nil
+                                        }
                                     } else {
                                         loginError = "No accounts found for this customer."
                                     }

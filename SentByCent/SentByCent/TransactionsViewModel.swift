@@ -3,12 +3,11 @@ import Foundation
 class TransactionsViewModel: ObservableObject {
     @Published var transactions: [(String, String)] = []  // Stores (description, rounded-up cents) as a list
     @Published var totalSaved: Double = 0.0  // Stores the total rounded-up cents
-    
-    // new array without rounding transactions
     @Published var realTransactions: [(String, Double)] = []  // Stores (description, original amount) as a list
+    @Published var roundedSavings: Double = 0.0  // Stores the total amount saved from rounding
+    @Published var totalDonations: Double = GlobalVariables.shared.totalDonated  // Tracks total donated amount
 
-    
-
+    // Fetch and process transactions with rounding logic
     func fetchTransactions(for accountID: String) {
         guard let url = URL(string: "http://api.nessieisreal.com/accounts/\(accountID)/purchases?key=2e0c94f409f596fcf845593ff5e6d409") else {
             print("Invalid URL")
@@ -32,15 +31,18 @@ class TransactionsViewModel: ObservableObject {
             do {
                 let decodedTransactions = try JSONDecoder().decode([Purchase].self, from: data)
                 DispatchQueue.main.async {
-                    // Reset total saved to 0 before recalculating
-                    self.totalSaved = 0.0
+                    self.totalSaved = 0.0  // Reset before recalculating
                     
-                    // Process each transaction, calculate the rounded-up change, and add to totalSaved
+                    // Process transactions and update saved amount
                     self.transactions = decodedTransactions.map { purchase in
                         let change = self.calculateChange(for: purchase.amount)
                         self.totalSaved += change  // Accumulate the rounded-up change
                         return (purchase.description, "+$\(String(format: "%.2f", change))")
                     }
+
+                    // Update global saved amount
+                    GlobalVariables.shared.savedAmount = self.totalSaved
+                    self.roundedSavings = self.totalSaved
                 }
             } catch {
                 print("Error decoding transactions: \(error)")
@@ -55,11 +57,8 @@ class TransactionsViewModel: ObservableObject {
         let change = roundedAmount - amount  // Calculate the spare change
         return change
     }
-    
-    
-    
-    // WITHOUT rounding this is a method to j grab transactions raw
-    
+
+    // Fetch transactions without rounding (raw transactions)
     func fetchTransactionsReal(for accountID: String) {
         guard let url = URL(string: "http://api.nessieisreal.com/accounts/\(accountID)/purchases?key=2e0c94f409f596fcf845593ff5e6d409") else {
             print("Invalid URL")
@@ -83,7 +82,6 @@ class TransactionsViewModel: ObservableObject {
             do {
                 let decodedTransactions = try JSONDecoder().decode([Purchase].self, from: data)
                 DispatchQueue.main.async {
-                    // Populate the realTransactions array with the actual data
                     self.realTransactions = decodedTransactions.map { purchase in
                         return (purchase.description, purchase.amount) // No rounded-up amount
                     }
@@ -94,9 +92,26 @@ class TransactionsViewModel: ObservableObject {
         }
         task.resume()
     }
-    
-    // end
-    
-    
-    
+
+    // Function to handle donations
+    func donate(amount: Double) -> Bool {
+        guard amount > 0 else {
+            print("Invalid donation amount.")
+            return false
+        }
+
+        if amount > GlobalVariables.shared.savedAmount {
+            print("Not enough funds in saved amount to donate.")
+            return false
+        }
+
+        DispatchQueue.main.async {
+            GlobalVariables.shared.savedAmount -= amount
+            GlobalVariables.shared.totalDonated += amount
+            self.totalDonations = GlobalVariables.shared.totalDonated
+            print("Donated $\(amount). New saved amount: \(GlobalVariables.shared.savedAmount)")
+        }
+        
+        return true
+    }
 }

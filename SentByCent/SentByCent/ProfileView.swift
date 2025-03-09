@@ -2,7 +2,8 @@ import SwiftUI
 
 struct ProfileView: View {
     @Binding var isLoggedIn: Bool // ✅ Binding to control logout navigation
-    @State private var username: String = GlobalVariables.username ?? "Unknown" // ✅ Track username updates
+    @State private var username: String = GlobalVariables.shared.username ?? "Unknown" // ✅ Track username updates
+    @State private var totalDonated: Double = GlobalVariables.shared.totalDonated // ✅ Keep donations in sync
 
     var body: some View {
         NavigationView {
@@ -24,8 +25,8 @@ struct ProfileView: View {
                 VStack(alignment: .leading, spacing: 15) {
                     InfoRow(title: "Username:", value: username) // ✅ Dynamic username update
                     InfoRow(title: "Password:", value: "********")
-                    InfoRow(title: "Donations Made:", value: "$150")
-                    
+                    InfoRow(title: "Donations Made:", value: String(format: "$%.2f", totalDonated)) // ✅ Tracks actual donations
+
                     // Change Credentials Navigation
                     NavigationLink(destination: ChangeCredentialsView(username: $username)) { // ✅ Pass binding
                         HStack {
@@ -52,7 +53,10 @@ struct ProfileView: View {
                 
                 // Logout Button ✅ (Navigates Back to ContentView)
                 Button(action: {
-                    isLoggedIn = false // ✅ Logs out user and returns to login
+                    GlobalVariables.shared.username = nil
+                    GlobalVariables.shared.account = nil
+                    GlobalVariables.shared.totalDonated = 0.0 // ✅ Reset donations on logout
+                    isLoggedIn = false
                 }) {
                     Text("Logout")
                         .font(.custom("AmericanTypewriter", size: 20))
@@ -70,6 +74,9 @@ struct ProfileView: View {
             .frame(maxWidth: .infinity)
             .background(Color(UIColor.systemGray6))
             .navigationBarHidden(true)
+            .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("DonationMade"))) { _ in
+                self.totalDonated = GlobalVariables.shared.totalDonated // ✅ Sync donations
+            }
         }
     }
 }
@@ -142,7 +149,6 @@ struct ChangeCredentialsView: View {
                             .padding(.horizontal, 40)
                     }
                     
-                    // Error/Success Messages
                     if !usernameError.isEmpty {
                         Text(usernameError).foregroundColor(.red).font(.custom("AmericanTypewriter", size: 18))
                     }
@@ -203,7 +209,6 @@ struct ChangeCredentialsView: View {
                             .padding(.horizontal, 40)
                     }
                     
-                    // Error/Success Messages
                     if !passwordError.isEmpty {
                         Text(passwordError).foregroundColor(.red).font(.custom("AmericanTypewriter", size: 18))
                     }
@@ -220,21 +225,19 @@ struct ChangeCredentialsView: View {
         }
     }
     
-    // Save Username Changes
     func saveUsernameChanges() {
         if newUsername.isEmpty {
             usernameError = "Username cannot be empty!"
             usernameSuccess = ""
         } else {
             usernameError = ""
-            username = newUsername // ✅ Updates ProfileView
-            GlobalVariables.username = newUsername // ✅ Updates globally
+            username = newUsername
+            GlobalVariables.shared.username = newUsername
             usernameSuccess = "Username successfully updated!"
         }
         newUsername = ""
     }
 
-    // Save Password Changes
     func savePasswordChanges() {
         if currentPassword.isEmpty || newPassword.isEmpty || confirmPassword.isEmpty {
             passwordError = "All password fields are required!"

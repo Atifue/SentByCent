@@ -1,13 +1,13 @@
-//
-//  GlobalVariables.swift
-//  SentByCent
-//
-//  Created by Atif Mahmood on 3/8/25.
-//
-
 import Foundation
 
-class GlobalVariables {
-    static var account: Account?
-    static var username: String?
+class GlobalVariables: ObservableObject {
+    static let shared = GlobalVariables() // ✅ Singleton instance
+    
+    @Published var username: String? = nil
+    @Published var account: Account? = nil
+    @Published var savedAmount: Double = 0.0
+    @Published var totalDonated: Double = 0.0 // ✅ Make sure this exists
+
+    private init() {} // Prevents multiple instances
 }
+

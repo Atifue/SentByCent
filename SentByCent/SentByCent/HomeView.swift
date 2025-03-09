@@ -3,12 +3,11 @@ import SwiftUI
 struct HomeView: View {
     @State private var selectedTab: String = "Home"
     @Binding var isLoggedIn: Bool
-    // Make sure to observe the view model
     @ObservedObject var transactionsViewModel: TransactionsViewModel
-    
+    @ObservedObject var globalVars = GlobalVariables.shared // ✅ Observe changes
+
     var body: some View {
         TabView(selection: $selectedTab) {
-            // Pass transactionsViewModel to MainScreen
             MainScreen(transactionsViewModel: transactionsViewModel)
                 .tabItem {
                     Image(systemName: "house.fill")
@@ -32,6 +31,7 @@ struct HomeView: View {
                         .font(.custom("American Typewriter", size: 14))
                 }
                 .tag("Charity")
+
             ProfileView(isLoggedIn: $isLoggedIn)
                 .tabItem {
                     Image(systemName: "person.fill")
@@ -44,9 +44,10 @@ struct HomeView: View {
     }
 }
 
+// MARK: - Main Screen (Home Page)
 struct MainScreen: View {
-    // Accept transactionsViewModel passed from HomeView
     @ObservedObject var transactionsViewModel: TransactionsViewModel
+    @ObservedObject var globalVars = GlobalVariables.shared // ✅ Observe GlobalVariables directly
 
     var body: some View {
         NavigationStack {
@@ -57,10 +58,17 @@ struct MainScreen: View {
                             .fill(Color(red: 201/255, green: 173/255, blue: 167/255))
                             .frame(width: 250, height: 250)
                             .overlay(
-                                Text("$\(String(format: "%.2f", transactionsViewModel.totalSaved))") // Show totalSaved dynamically
-                                    .font(.custom("American Typewriter", size: 50))
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.white)
+                                VStack {
+                                    // ✅ Observing `globalVars.savedAmount` so UI updates automatically
+                                    Text("$\(String(format: "%.2f", globalVars.savedAmount))")
+                                        .font(.custom("American Typewriter", size: 50))
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.white)
+
+                                    Text("Available to Donate")
+                                        .font(.custom("American Typewriter", size: 18))
+                                        .foregroundColor(.white.opacity(0.8))
+                                }
                             )
                             .offset(y: 50)
 
@@ -72,7 +80,7 @@ struct MainScreen: View {
                     }
                     .padding(.bottom, 40)
 
-                    Text("Coins")
+                    Text("Recent Transactions")
                         .font(.custom("American Typewriter", size: 24))
                         .fontWeight(.bold)
                         .padding(.top, 30)
@@ -109,7 +117,7 @@ struct MainScreen: View {
             .background(Color.gray.opacity(0.1).edgesIgnoringSafeArea(.all))
             .navigationBarHidden(true)
             .onAppear {
-                if let accountID = GlobalVariables.account?.id { // ✅ Use stored account ID
+                if let accountID = GlobalVariables.shared.account?.id {
                     transactionsViewModel.fetchTransactions(for: accountID)
                 } else {
                     print("❌ Error: No account ID found")

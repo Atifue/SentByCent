@@ -1,17 +1,10 @@
-//
-//  CharityView.swift
-//  SentByCent
-//
-//  Created by Atif Mahmood on 3/8/25.
-//
-
 import SwiftUI
 
 struct CharityView: View {
     @State private var charities = ["Red Cross", "World Wildlife Fund", "Doctors Without Borders", "UNICEF"]
     @State private var selectedCharity: String? = nil
     @State private var showingSentAlert: Bool = false
-    @State private var donationAmount: String = "$0.00"
+    @State private var donationAmount: String = ""
     @State private var showDonationSheet: Bool = false
     @State private var showAddCharitySheet: Bool = false
     @State private var newCharityName: String = ""
@@ -27,7 +20,6 @@ struct CharityView: View {
                 List {
                     ForEach(charities, id: \.self) { charity in
                         Button(action: {
-                            // Show the donation sheet when a charity is clicked
                             selectedCharity = charity
                             showDonationSheet = true
                         }) {
@@ -43,15 +35,14 @@ struct CharityView: View {
                             .shadow(color: Color.gray.opacity(0.2), radius: 5)
                         }
                     }
-                    .onDelete(perform: deleteCharity) // Swipe to delete
+                    .onDelete(perform: deleteCharity)
                 }
-                .listStyle(PlainListStyle()) // Makes it look nicer
+                .listStyle(PlainListStyle())
 
                 Spacer()
 
-                // "Add Charity" Button
+                // ✅ "Add Charity" Button
                 Button(action: {
-                    // Show the slide-up view to add a new charity
                     showAddCharitySheet = true
                 }) {
                     HStack {
@@ -75,22 +66,20 @@ struct CharityView: View {
                 Alert(title: Text("Donation Sent"), message: Text("Your donation has been sent successfully!"), dismissButton: .default(Text("OK")))
             }
             .sheet(isPresented: $showDonationSheet) {
-                // Slide-up donation sheet
                 DonationSheet(charity: selectedCharity ?? "Charity", donationAmount: $donationAmount, showingSentAlert: $showingSentAlert)
             }
             .sheet(isPresented: $showAddCharitySheet) {
-                // Slide-up view for adding a new charity
                 AddCharitySheet(newCharityName: $newCharityName, charities: $charities)
             }
         }
     }
 
-    // Function to delete charity from the list
     func deleteCharity(at offsets: IndexSet) {
         charities.remove(atOffsets: offsets)
     }
 }
 
+// MARK: - **Donation Sheet**
 struct DonationSheet: View {
     var charity: String
     @Binding var donationAmount: String
@@ -122,8 +111,8 @@ struct DonationSheet: View {
             
             Spacer()
 
-            // Donation amount input field
-            TextField("$0.00", text: $donationAmount)
+            // ✅ Donation Amount Input
+            TextField("Enter amount", text: $donationAmount)
                 .keyboardType(.decimalPad)
                 .padding()
                 .background(Color.white)
@@ -131,23 +120,38 @@ struct DonationSheet: View {
                 .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 3)
                 .padding(.horizontal, 40)
                 .font(.custom("American Typewriter", size: 24))
-                .frame(height: 80) // Increased height here
+                .frame(height: 60)
                 .focused($isAmountFieldFocused)
                 .onChange(of: donationAmount) { newValue in
-                    // Format the donation input as $x.xx
-                    if let amount = Double(newValue.replacingOccurrences(of: "$", with: "")) {
-                        donationAmount = String(format: "$%.2f", amount)
+                    donationAmount = newValue.filter { "0123456789.".contains($0) } // Allow only numbers
+                }
+                .onSubmit {
+                    if let amount = Double(donationAmount), amount > 0 {
+                        donationAmount = String(format: "%.2f", amount)
                     } else {
-                        donationAmount = "$0.00"
+                        donationAmount = "0.00"
                     }
                 }
 
             Spacer()
 
-            // Send button
+            // ✅ Send button with proper updates
             Button(action: {
-                showingSentAlert = true
-                donationAmount = "$0.00" // Reset after donation is sent
+                if let amount = Double(donationAmount), amount > 0 {
+                    if amount > GlobalVariables.shared.savedAmount {
+                        showingSentAlert = false // Not enough funds
+                    } else {
+                        // ✅ Update Global Variables
+                        GlobalVariables.shared.savedAmount -= amount
+                        GlobalVariables.shared.totalDonated += amount
+
+                        // ✅ Notify Profile + Home that values changed
+                        NotificationCenter.default.post(name: NSNotification.Name("DonationMade"), object: nil)
+
+                        showingSentAlert = true
+                    }
+                }
+                donationAmount = ""
             }) {
                 Text("Send")
                     .font(.custom("American Typewriter", size: 18))
@@ -161,13 +165,14 @@ struct DonationSheet: View {
             }
             .padding(.bottom, 20)
         }
-        .background(Color.gray.opacity(0.1)) // Setting the entire background to gray
+        .background(Color.gray.opacity(0.1))
         .cornerRadius(30)
         .padding(.top, 50)
-        .transition(.move(edge: .bottom)) // Slide-up transition
+        .transition(.move(edge: .bottom))
     }
 }
 
+// MARK: - **Add Charity Sheet**
 struct AddCharitySheet: View {
     @Binding var newCharityName: String
     @Binding var charities: [String]
@@ -203,15 +208,15 @@ struct AddCharitySheet: View {
                 .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 3)
                 .padding(.horizontal, 40)
                 .font(.custom("American Typewriter", size: 20))
-                .frame(height: 80) // Increased height here
+                .frame(height: 80)
 
             Spacer()
 
-            // Add Charity button
+            // ✅ Add Charity button
             Button(action: {
                 if !newCharityName.isEmpty {
                     charities.append(newCharityName)
-                    newCharityName = "" // Reset after adding
+                    newCharityName = ""
                     presentationMode.wrappedValue.dismiss()
                 }
             }) {
@@ -227,10 +232,9 @@ struct AddCharitySheet: View {
             }
             .padding(.bottom, 20)
         }
-        .background(Color.gray.opacity(0.1)) // Setting the entire background to gray
+        .background(Color.gray.opacity(0.1))
         .cornerRadius(30)
         .padding(.top, 50)
-        .transition(.move(edge: .bottom)) // Slide-up transition
+        .transition(.move(edge: .bottom))
     }
 }
-

@@ -17,7 +17,7 @@ struct AccountsView: View {
                     .padding(.top, 20)
 
                 List {
-                    if let account = GlobalVariables.account {
+                    if let account = GlobalVariables.shared.account {
                         // ✅ Added NavigationLink to make the account clickable
                         NavigationLink( //added transactionView
                             destination: AccountDetailsView(account: account, transactionsViewModel: transactionsViewModel),
